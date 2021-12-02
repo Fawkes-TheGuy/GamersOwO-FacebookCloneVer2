@@ -17,7 +17,7 @@
 .header_input {
   display: flex;
   align-items: center;
-  background-color: rgb(243, 239, 239);
+
   padding: 10px;
   margin-left: 10px;
   border-radius: 999px;
@@ -87,4 +87,8 @@
   display: flex;
   padding: 10px;
   font-weight: bold;
+}
+
+.header {
+  align-items: center;
 }

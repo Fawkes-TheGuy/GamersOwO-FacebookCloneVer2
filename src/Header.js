@@ -1,4 +1,5 @@
-import React from "react";
+import React, { Component, useState } from "react";
+import AsyncSelect from "react-select/async";
 import { NavLink } from "react-router-dom";
 //import App2 from 'gamers-fb-clone/react-app2/src'
 import "./Header.css";
@@ -7,13 +8,19 @@ import HomeIcon from "@mui/icons-material/Home";
 import ReactDOM from "react-dom";
 import "./index.css";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
-
+import db from "./firebase";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 import ForumIcon from "@mui/icons-material/Forum";
 import { useStateValue } from "./StateProvider";
-import { ChatEngine } from "react-chat-engine";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Routes,
+  Link,
+} from "react-router-dom";
 
 //export function launchChat() {
 //  ReactDOM.render(<AppChat />, document.getElementById("root"));
@@ -22,9 +29,41 @@ import { ChatEngine } from "react-chat-engine";
 //}
 
 //export function ShadowContent({ root, newChat})
-
+//search feature code
 function Header() {
   const [{ user }, dispatch] = useStateValue();
+  const [selectedTag, settTag] = useState([]);
+
+  var loadOptions = async (inputValue) => {
+    inputValue = inputValue.toLowerCase().replace(/\W/g, "");
+    return new Promise((resolve) => {
+      db.collection("posts")
+        .orderBy("tagging")
+        .startAt(inputValue)
+        .endAt(inputValue + "\uf8ff")
+        .get()
+        .then((docs) => {
+          if (!docs.empty) {
+            let recommendedTags = [];
+            docs.forEach(function (doc) {
+              const tag = {
+                value: doc.id,
+                label: doc.data().message,
+              };
+              recommendedTags.push(tag);
+            });
+            return resolve(recommendedTags);
+          } else {
+            return resolve([]);
+          }
+        });
+    });
+  };
+
+  var handleOnChange = (tags) => {
+    settTag([tags]);
+  };
+  //nav bar structure
   return (
     <div className="header">
       <div className="header_left">
@@ -34,18 +73,22 @@ function Header() {
         />
         <div className="header_input">
           <SearchIcon />
-
-          <input placeholder="Search Facebook" type="text" />
+          <AsyncSelect loadOptions={loadOptions} onChange={handleOnChange} />
+          {selectedTag.map((e) => {
+            return <div key={e.value}>{e.label}</div>;
+          })}
         </div>
       </div>
 
       <div className="header_center">
         <div className="header_option header_option--active">
-          <HomeIcon fontSize="large" />
+          <Link to="/">
+            <HomeIcon fontSize="large" />
+          </Link>
         </div>
 
         <div className="header_option">
-          <a target="blank" href="https://www.youtube.com/">
+          <a target="blank" href="https://kind-newton-563800.netlify.app/">
             <SubscriptionsIcon fontSize="large" />
           </a>
         </div>
@@ -78,3 +121,6 @@ function Header() {
 }
 
 export default Header;
+
+/*
+ */

@@ -1,27 +1,28 @@
 import React from "react";
 import Header from "./Header";
-import Sidebar from "./Sidebar";
 import Feed from "./Feed";
 import Login from "./Login";
 import Widgets from "./Widgets";
+
 import "./App.css";
 import { useStateValue } from "./StateProvider";
 //Everthing below this is dealing with routing
-import { BrowserRouter as Router, Switch, Route, Routes, Link } from "react-router-dom";
-//import About from "./About";
-import SidebarRow from "./Sidebar";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Routes,
+  Link,
+} from "react-router-dom";
+
 //import About from "./Sidebar";
 //import Posts from "./Posts";
 import About from "./About";
-/*
-function About() {
-  return (
-    <div style={{padding: 20}}>
-      <p>THIS BETTER WORK</p>
-    </div>
-  );
-}
-*/
+import PeopleIcon from "@mui/icons-material/People";
+import InfoIcon from "@mui/icons-material/Info";
+import HomeIcon from "@mui/icons-material/Home";
+
+//Deals with overall structure and rendering of the app
 function App() {
   const [{ user }, distpatch] = useStateValue();
   return (
@@ -32,31 +33,41 @@ function App() {
           <Login />
         ) : (
           <>
-            <Header />
-              <div className="app_body">
-                <nav>
-                   <Link to="/about" style={{padding: 5}} >
-                     About
-                   </Link>
-  
+            <Header>
+              <Routes>
+                <Route path="/" element={<Feed />} />
+              </Routes>
+            </Header>
+
+            <div className="app_body">
+              <Routes>
+                <Route path="/" element={<Feed />} />
+                <Route path="/about" element={<About />} />
+              </Routes>
+              <nav className="nav">
+                <button className="homeButton">
+                  <PeopleIcon />
                   <Link to="/">
-                    Feed
+                    <a>Home</a>
                   </Link>
-                  <Widgets />
+                </button>
+
+                <button className="aboutButton">
+                  <InfoIcon />
+                  <Link to="/about" style={{ padding: 5 }}>
+                    <a>About</a>
+                  </Link>
+                </button>
               </nav>
-              </div>
+
+              <Widgets />
+            </div>
           </>
         )}
       </div>
-      <Routes>
-        <Route path="/about" element={<About />}/>
-        <Route path="/" element={<Feed />} />
-      </Routes>
     </Router>
   );
 }
-
-
 
 export default App;
 
